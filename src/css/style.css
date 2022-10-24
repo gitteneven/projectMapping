@@ -1,0 +1,15 @@
+@import url('normalize.css');
+
+body {
+  background-color: black;
+  color: white;
+}
+
+#building-template {
+  /* display: none; */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1920px;
+  height: 1080px;
+}
