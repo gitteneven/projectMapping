@@ -16,7 +16,6 @@ const init = () => {
   console.log('Hello from main.ts');
   const game = new Phaser.Game(config);
 
-
 }
 
 init()
