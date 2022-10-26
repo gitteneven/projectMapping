@@ -1,5 +1,7 @@
 import Phaser from "phaser";
 import HealthBar from "./HealthBar";
+// import PowerupBar from "./PowerupBar";
+import ErrorPopups from "./ErrorPopups";
 
 var text1;
 var text2;
@@ -11,7 +13,29 @@ let back_healthbar;
 let top_healthbar;
 let blue;
 let background
+let userEnabled = true;
+let errorCount = 0;
 
+let mouseUp, mouseLeft, mouseDown, mouseRight, powerupActivate;
+let mouseCoordinates = { x: 1040, y: 830 };
+
+let errorContainer = {
+    xStart: 226,
+    xEnd: 1864,
+    yStart: 692,
+    yEnd: 966
+}
+let errorWidth = 240;
+let errorHeight = 153;
+
+function playerHitPopup (popup, popupX) {
+    console.log('user hit popup');
+    popup.destroy();
+    popupX.destroy();
+
+    userEnabled = true;
+    errorCount -= 1;
+}
 
 export default class Scene extends Phaser.Scene {
     private player?: Phaser.Physics.Arcade.Sprite;
@@ -51,6 +75,13 @@ export default class Scene extends Phaser.Scene {
         // this.load.image('top_healthbar', 'assets/loading_bar-top.png')
         // this.load.image('blue', 'assets/fullblue.png')
 
+        this.load.image('error-popup', 'assets/errorframered.png');
+        this.load.image('error-x', 'assets/errorframex.png');
+
+        // this.load.image('logo', 'assets/phaser3-logo.png');
+        // this.load.image('libs', 'assets/libs.png');
+        // this.load.glsl('bundle', 'assets/plasma-bundle.glsl.js');
+        // this.load.glsl('stars', 'assets/starfields.glsl.js');
     }
 
     create() {
@@ -60,14 +91,19 @@ export default class Scene extends Phaser.Scene {
         background.setLoop(loop);  // loop: true/false
         background.play(true);
 
-        //cursor
-        this.player = this.physics.add.sprite(100, 450, 'cursor')
+        // this.add.image(0, 0, 'cursor').setOrigin(0);
+        this.player = this.physics.add.sprite(mouseCoordinates.x, mouseCoordinates.y, 'cursor').setOrigin(0, 0).setScale(.1).setDepth(1);
         this.cursors = this.input.keyboard.createCursorKeys()
         this.input.mouse.disableContextMenu();
 
         //players
         coderona = this.input.keyboard.addKey('C');
-        user = this.input.keyboard.addKey('U')
+        user = this.input.keyboard.addKey('U');
+        mouseUp = this.input.keyboard.addKey('t');
+        mouseLeft = this.input.keyboard.addKey('l');
+        mouseDown = this.input.keyboard.addKey('b');
+        mouseRight = this.input.keyboard.addKey('r');
+        powerupActivate = this.input.keyboard.addKey('p');
 
         // test text
         text1 = this.add.text(10, 10, '');
@@ -105,6 +141,10 @@ export default class Scene extends Phaser.Scene {
         })
 
         user.on('down', () => {
+            if(userEnabled == true && errorCount == 0) {
+                //we can update counter on user's side
+                console.log('player one clicked')
+            }
             text3.setText([
                 'player two ready'
             ]);
@@ -113,6 +153,46 @@ export default class Scene extends Phaser.Scene {
             }
             this.setMeterPercentage(1)
         })
+
+        mouseUp.on('down', () => {
+            if (mouseCoordinates.y - 10 > errorContainer.yStart) {
+                mouseCoordinates.y -= 10;
+            }
+        });
+
+        mouseDown.on('down', () => {
+            if (mouseCoordinates.y + 10 < errorContainer.yEnd - 60) {
+                mouseCoordinates.y += 10;
+            }
+        });
+
+        // this.physics.moveToObject(this.player, pointer, 100, 300);
+        mouseLeft.on('down', () => {
+            if (mouseCoordinates.x - 10 > errorContainer.xStart) {
+                mouseCoordinates.x -= 10;
+            }
+        });
+
+        mouseRight.on('down', () => {
+            if (mouseCoordinates.x + 10 < errorContainer.xEnd - 39) {
+                mouseCoordinates.x += 10;
+            }
+        });
+
+        powerupActivate.on('down', () => {
+            console.log('powerup activated, spawn errors');
+
+            userEnabled = false;
+            errorCount += 1;
+
+            let errorX = Phaser.Math.Between(errorContainer.xStart, errorContainer.xEnd - errorWidth);
+            let errorY = Phaser.Math.Between(errorContainer.yStart, errorContainer.yEnd - errorHeight);
+
+            let popup = this.physics.add.sprite(errorX, errorY, 'error-popup').setOrigin(0, 0);
+            let popupX = this.physics.add.sprite(errorX + 200, errorY + 11, 'error-x').setOrigin(0, 0);
+
+            this.physics.add.collider(this.player, popupX, () => { playerHitPopup(popup, popupX) });
+        });  
 
     }
 
@@ -123,24 +203,34 @@ export default class Scene extends Phaser.Scene {
         this.rightCap.x = this.middle.x + this.middle.displayWidth
     }
 
+    // update() {
+    //     //check if the 2 players are ready
+    //     if (!this.cursors) {
+    //         return
+    //     }
+
+    //     //move user with the coordinates
+    //     // var pointer = this.input.activePointer;
+
+        
+
+    //     //listen for powerup, then spawn errors
+           
+    // }
+
+
     update() {
         //check if the 2 players are ready
         if (!this.cursors) {
             return
         }
 
-        //move user with the coordinates
-        var pointer = this.input.activePointer;
+        if (this.cursors?.left.isDown) {
+            text3.setText([
+                'player two ready'
+            ]);
+        };
 
-        text1.setText([
-            'x: ' + pointer.worldX,
-            'y: ' + pointer.worldY,
-            'isDown: ' + pointer.isDown
-        ]);
-
-        this.physics.moveToObject(this.player, pointer, 100, 300);
-
+        this.physics.moveToObject(this.player, mouseCoordinates, 300, 250);
     }
-
-
 }
