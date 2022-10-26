@@ -8,6 +8,9 @@ const config = {
   height: 1080,
   physics: {
     default: 'arcade',
+    arcade: {
+      debug: true
+    }
   },
   scene: Scene
 };
@@ -15,7 +18,6 @@ const config = {
 const init = () => {
   console.log('Hello from main.ts');
   const game = new Phaser.Game(config);
-
 }
 
 init()
