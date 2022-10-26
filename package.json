@@ -12,7 +12,8 @@
     "build": "tsc && vite build && electron-builder"
   },
   "dependencies": {
-    "normalize.css": "^8.0.1"
+    "normalize.css": "^8.0.1",
+    "phaser": "^3.55.2"
   },
   "devDependencies": {
     "electron": "^19.0.6",
