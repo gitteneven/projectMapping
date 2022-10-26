@@ -141,16 +141,18 @@ export default class Scene extends Phaser.Scene {
         })
 
         user.on('down', () => {
-            if(userEnabled == true && errorCount == 0) {
+            if(userEnabled == true && errorCount == 0 && this.fullWidth > 120) {
                 //we can update counter on user's side
                 console.log('player one clicked')
+                this.fullWidth -= 178;
             }
+
             text3.setText([
                 'player two ready'
             ]);
-            if(this.fullWidth >120){
-                this.fullWidth -= 178
-            }
+            // if(this.fullWidth > 120  ){
+            //     this.fullWidth -= 178
+            // }
             this.setMeterPercentage(1)
         })
 
@@ -202,22 +204,6 @@ export default class Scene extends Phaser.Scene {
         this.middle.displayWidth = width
         this.rightCap.x = this.middle.x + this.middle.displayWidth
     }
-
-    // update() {
-    //     //check if the 2 players are ready
-    //     if (!this.cursors) {
-    //         return
-    //     }
-
-    //     //move user with the coordinates
-    //     // var pointer = this.input.activePointer;
-
-        
-
-    //     //listen for powerup, then spawn errors
-           
-    // }
-
 
     update() {
         //check if the 2 players are ready

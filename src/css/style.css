@@ -22,6 +22,6 @@ body {
 }
 
 canvas {
-  /* z-index: 1;
-  opacity: .8; */
+  z-index: 1;
+  opacity: .95;
 }
