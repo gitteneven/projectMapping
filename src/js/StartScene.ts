@@ -1,9 +1,10 @@
-import Phaser from "phaser";
+import Phaser, { Sound } from "phaser";
 
 let textUser, textCoderona, textCountdown;
 let coderona, user, bootButton, welcome;
 let welcomeStarted = false;
 let welcomeEnded = false;
+let fight;
 let countdownStarted = false;
 
 let userReady = false;
@@ -11,6 +12,9 @@ let coderonaReady = false;
 
 let countdownStartTimer;
 let initialTime = 3;
+let normalSound;
+let fightSound;
+let goodSound;
 
 export default class StartScene extends Phaser.Scene {
   private player?: Phaser.Physics.Arcade.Sprite;
@@ -28,10 +32,16 @@ export default class StartScene extends Phaser.Scene {
     //welcome video
     this.load.video('welcome', 'assets/welcome.mp4', 'loadeddata', false, true);
     this.load.video('fight', 'assets/fightloop.mp4', 'loadeddata', false, true);
+    
+    this.load.audio('good-sound', 'assets/audio/loopGood.mp3')
+    this.load.audio('normal-sound', 'assets/audio/loopNormal.mp3')
+    this.load.audio('fight-sound', 'assets/audio/fightsfx.mp3')
   }
 
   async create() {
     console.log('in startscene', this.game.config.gameRestart);
+
+
 
     if(this.game.config.gameRestart == true) {
       console.log('going to restart this scene');
@@ -48,6 +58,10 @@ export default class StartScene extends Phaser.Scene {
       countdownStarted = false;
       countdownStartTimer = null;
       initialTime = 3;
+
+      goodSound = this.sound.add('good-sound', { loop: true });
+      goodSound.setVolume(0.2)
+      goodSound.play();
     } else {
       console.log(this.game.config.arduinoWriter);
       await this.game.config.arduinoWriter.write('bootup');
@@ -57,14 +71,28 @@ export default class StartScene extends Phaser.Scene {
 
     //background video Game
     welcome = this.add.video(0, 0, 'welcome').setOrigin(0, 0);
-    // welcome.setViscuuuuuibility(false);
+    
     welcome.on('complete', () => {
+      goodSound.stop()
+      fightSound = this.sound.add('fight-sound', { loop: false });
+      fightSound.setVolume(0.2)
+      fightSound.play();
+      normalSound = this.sound.add('normal-sound', { loop: true });
+      normalSound.setVolume(0.2)
+      normalSound.play();
       console.log('video ended, let users press butons and play fightloop');
-      welcome.changeSource('fight');
-      var loop = welcome.getLoop();  // loop: true/false
-      welcome.setLoop(loop); 
-      welcome.play(true);
+      // welcome.changeSource('fight');
+      welcome.stop();
 
+      textCountdown.setText([
+        `Press when ready`
+      ]);
+
+      fight = this.add.video(0, 0, 'fight').setOrigin(0, 0);
+      var loop = fight.getLoop();
+      fight.setLoop(loop);
+      fight.play(true);
+     
       welcomeEnded = true;
     });
 
@@ -76,10 +104,12 @@ export default class StartScene extends Phaser.Scene {
     user = this.input.keyboard.addKey('U');
     bootButton = this.input.keyboard.addKey('P');
 
+   
+
     // test text
-    textUser = this.add.text(1690, 660, '', { font: '72px lores-9-plus-wide', color: '#ffffff'}).setOrigin(0.5, 0.5);
-    textCoderona = this.add.text(230, 660, '', { font: '64px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
-    textCountdown = this.add.text(960, 300, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
+    textUser = this.add.text(1690, 660, '', { font: '72px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
+    textCoderona = this.add.text(230, 660, '', { font: '64px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
+    textCountdown = this.add.text(960, 330, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
    
     //action of setup team to boot up the game and play the starting video
     bootButton.on('down', () => {
@@ -88,6 +118,10 @@ export default class StartScene extends Phaser.Scene {
         welcomeStarted = true;
         // welcome.setVisibility(true);
         welcome.play();
+
+        goodSound = this.sound.add('good-sound', { loop: true });
+        goodSound.setVolume(0.2)
+        goodSound.play();
       }
     });
 
@@ -151,6 +185,7 @@ export default class StartScene extends Phaser.Scene {
       //timer is at end, start game;
       // this.game.config.gameRestart = true;
       // this.scene.start('startscene');
+      normalSound.stop();
       this.game.config.gameRestart = true;
       this.scene.start('gamescene');
     }

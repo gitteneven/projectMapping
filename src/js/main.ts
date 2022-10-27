@@ -23,14 +23,14 @@ let writer;
 
 const config = {
   type: Phaser.AUTO,
-  backgroundColor: '#0827F5',
+  backgroundColor: '#000000',
   width: 1920,
   height: 1080,
   
   physics: {
     default: 'arcade',
     arcade: {
-      debug: true
+      debug: false
     }
   },
   parent: 'app',

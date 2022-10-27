@@ -28,7 +28,7 @@ let errorHeight = 153;
 let powerCount = 0;
 
 let countdownStartTimer, textCountdown;
-let initialTime = 10;
+let initialTime = 60;
 
 function playerHitPopup (popup, popupX) {
     console.log('user hit popup');
@@ -102,8 +102,8 @@ export default class GameScene extends Phaser.Scene {
             userCount = 0;
             coderonaCount = 0;
             mouseCoordinates = { x: 1040, y: 830 };
-
-            initialTime = 10;
+            powerCount = 0; 
+            initialTime = 60;
         }
 
         //background video Game
@@ -115,12 +115,10 @@ export default class GameScene extends Phaser.Scene {
         //sound design
         normalSound = this.sound.add('normal-sound', { loop: true });
         normalSound.setVolume(0.2)
-        // normalSound.play();
+        normalSound.play();
 
         //sound faster
-        fastSound = this.sound.add('fast-sound', {loop: true});
-        fastSound.setVolume(0.2)
-        fastSound.play();
+   
 
         this.player = this.physics.add.sprite(mouseCoordinates.x, mouseCoordinates.y, 'cursor').setOrigin(0, 0).setScale(.1).setDepth(1);
         this.cursors = this.input.keyboard.createCursorKeys()
@@ -159,14 +157,15 @@ export default class GameScene extends Phaser.Scene {
         this.add.image(65, 830, 'top_powerbar').setOrigin(0, 0.5).setDepth(1)
 
         //actions of the users
-        coderona.on('down', () => {
+        coderona.on('down', async () => {
             this.setMeterPercentage(1);
 
             powerCount += 1;
             if (powerCount == 30) {
-                powerSound.play()
+                await this.game.config.arduinoWriter.write('bootup');
+                powerSound.play();
             }
-            coderonaCount += 1;
+            coderonaCount += .8;
 
         })
         
@@ -217,7 +216,7 @@ export default class GameScene extends Phaser.Scene {
             errorSound.setVolume(2)
             errorSound.play()
 
-            powerCount = 0
+            powerCount = 0;
             this.power1.setVisible(false);
             this.power2.setVisible(false);
             this.power3.setVisible(false);
@@ -238,13 +237,26 @@ export default class GameScene extends Phaser.Scene {
         }); 
         
         //start countdown on scene boot
-        textCountdown = this.add.text(960, 230, `00:${initialTime}`, { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
+        textCountdown = this.add.text(960, 330, `00:${initialTime}`, { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
         countdownStartTimer = this.time.addEvent({ delay: 1000, callback: this.gameCountdownStep, callbackScope: this, loop: true });
     }
 
     gameCountdownStep() {
         if (initialTime >= 1) {
             initialTime -= 1;
+            if(initialTime == 15) {
+                normalSound.stop();
+                fastSound = this.sound.add('fast-sound', { loop: true });
+                fastSound.setVolume(0.2)
+                fastSound.play();
+            };
+            if(initialTime <= 15 && initialTime % 2 == 0) {
+                textCountdown.setTint(0xff0000).setScale(1.3)
+
+            } else {
+                textCountdown.setTint(0xffffff).setScale(1);
+            }
+
             if (initialTime.toString().length == 1) {
                 textCountdown.setText([
                     `00:0${initialTime}`
@@ -261,6 +273,7 @@ export default class GameScene extends Phaser.Scene {
 
     decideGameWinner() {
         console.log('decide winner here');
+        fastSound.stop();
         if(userCount > coderonaCount) {
             //user wins
             console.log('user wins');
@@ -284,7 +297,7 @@ export default class GameScene extends Phaser.Scene {
     }
 
 
-    update() {
+    async update() {
         let totalDifference = userCount - coderonaCount;
 
         if(totalDifference > 0) {
@@ -324,7 +337,7 @@ export default class GameScene extends Phaser.Scene {
                         if (powerCount > 25) {
                             this.power5.setVisible(true) 
                             if (powerCount == 30) {
-                                this.power6.setVisible(true) 
+                                this.power6.setVisible(true)
                             }
                         }
                     }

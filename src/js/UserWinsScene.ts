@@ -18,13 +18,13 @@ export default class UserWinsScene extends Phaser.Scene {
 
   preload() {
     //user wins video
-    this.load.video('userwins', 'assets/temp_userwins.mp4', 'loadeddata', false, true);
+    this.load.video('userwins', 'assets/userwins.mp4', 'loadeddata', false, false);
   }
 
   create() {
     //background video Game
     console.log('this is the user wins scene');
-    background = this.add.video(0, 0, 'userwins').setOrigin(0, 0);
+    background = this.add.video(0, 0, 'userwins').setOrigin(0, 0).setVolume(0.4);
     background.play();
     background.on('complete', async () => {
       console.log('video ended, let users press butons');
@@ -42,7 +42,7 @@ export default class UserWinsScene extends Phaser.Scene {
     bootButton = this.input.keyboard.addKey('P');
 
     // test text
-    textReboot = this.add.text(960, 300, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
+    textReboot = this.add.text(960, 330, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
 
     //action of setup team to boot up the game and play the starting video
     bootButton.on('down', () => {
