@@ -6,7 +6,7 @@ body {
 }
 
 #building-template {
-  display: none;
+  /* display: none; */
   position: absolute;
   top: 0;
   left: 0;
@@ -23,5 +23,5 @@ body {
 
 canvas {
   z-index: 1;
-  opacity: .95;
+  opacity: .7
 }
