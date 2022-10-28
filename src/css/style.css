@@ -2,7 +2,7 @@
 
 @font-face {
   font-family: "lores-9-plus-wide";
-  src: url("../../public/assets/font/lo-res.otf");
+  src: url("../../assets/font/lo-res.otf");
 }
 
 body {
@@ -60,7 +60,7 @@ canvas {
   grid-column: 1;
   grid-row: 1;
   z-index: 1;
-  opacity: .75;
+  /* opacity: .75; */
 }
 
 .hidden {
