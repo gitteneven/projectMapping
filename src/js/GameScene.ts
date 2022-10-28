@@ -1,6 +1,5 @@
 import Phaser from "phaser";
 import HealthBar from "./HealthBar";
-// import PowerupBar from "./PowerupBar";
 import ErrorPopups from "./ErrorPopups";
 
 let errorSound;
@@ -59,7 +58,9 @@ export default class GameScene extends Phaser.Scene {
 
     preload() {
         //background image
-        this.load.video('background', 'assets/game.mp4', 'loadeddata', false, true)
+        // this.load.video('background', 'assets/game_lowbar.mp4', 'loadeddata', false, true);
+        // this.load.video('background', 'assets/game_nogrid.mp4', 'loadeddata', false, true);
+        this.load.video('background', 'assets/game_nogrid_hd.mp4', 'loadeddata', false, true);
 
         //cursor image
         this.load.image('cursor', 'assets/cursor.png');
@@ -107,18 +108,15 @@ export default class GameScene extends Phaser.Scene {
         }
 
         //background video Game
-        background = this.add.video(0, 545, 'background').setOrigin(0, 0.5)
-        var loop = background.getLoop();  // loop: true/false
-        background.setLoop(loop);  // loop: true/false
-        background.play(true);
+        // background = this.add.video(0, 545, 'background').setOrigin(0, 0.5)
+        background = this.add.video(0, 0, 'background').setOrigin(0, 0)
+        background.setLoop(true);
+        background.play();
 
         //sound design
         normalSound = this.sound.add('normal-sound', { loop: true });
         normalSound.setVolume(0.2)
         normalSound.play();
-
-        //sound faster
-   
 
         this.player = this.physics.add.sprite(mouseCoordinates.x, mouseCoordinates.y, 'cursor').setOrigin(0, 0).setScale(.1).setDepth(1);
         this.cursors = this.input.keyboard.createCursorKeys()
@@ -134,7 +132,6 @@ export default class GameScene extends Phaser.Scene {
         powerupActivate = this.input.keyboard.addKey('p');
 
         //health bar
-        // this.fullWidth = 117;
         this.fullWidth = 829;
 
         this.add.image(55, 645, 'back_healthbar').setOrigin(0, 0.5)
@@ -162,7 +159,12 @@ export default class GameScene extends Phaser.Scene {
 
             powerCount += 1;
             if (powerCount == 30) {
-                await this.game.config.arduinoWriter.write('bootup');
+                await this.game.config.serPort.write('bootup', (err) => {
+                    if (err) {
+                        return console.log('Error on write: ', err.message);
+                    }
+                    console.log('message written');
+                });
                 powerSound.play();
             }
             coderonaCount += .8;

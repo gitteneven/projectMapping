@@ -30,7 +30,7 @@ export default class StartScene extends Phaser.Scene {
 
   preload() {
     //welcome video
-    this.load.video('welcome', 'assets/welcome.mp4', 'loadeddata', false, true);
+    this.load.video('welcome', 'assets/welcome2.mp4', 'loadeddata', false, true);
     this.load.video('fight', 'assets/fightloop.mp4', 'loadeddata', false, true);
     
     this.load.audio('good-sound', 'assets/audio/loopGood.mp3')
@@ -40,8 +40,6 @@ export default class StartScene extends Phaser.Scene {
 
   async create() {
     console.log('in startscene', this.game.config.gameRestart);
-
-
 
     if(this.game.config.gameRestart == true) {
       console.log('going to restart this scene');
@@ -63,14 +61,23 @@ export default class StartScene extends Phaser.Scene {
       goodSound.setVolume(0.2)
       goodSound.play();
     } else {
-      console.log(this.game.config.arduinoWriter);
-      await this.game.config.arduinoWriter.write('bootup');
+      // console.log(this.game.config.arduinoWriter);
+      await this.game.config.serPort.write('bootup', (err) => {
+        if (err) {
+          return console.log('Error on write: ', err.message);
+        }
+        console.log('message written');
+      });
     }
 
     
 
-    //background video Game
+    //background video
     welcome = this.add.video(0, 0, 'welcome').setOrigin(0, 0);
+    if(welcome.isPlaying()) {
+      console.log('welcome is playing');
+      welcome.setPaused(true);
+    }
     
     welcome.on('complete', () => {
       goodSound.stop()
@@ -81,7 +88,6 @@ export default class StartScene extends Phaser.Scene {
       normalSound.setVolume(0.2)
       normalSound.play();
       console.log('video ended, let users press butons and play fightloop');
-      // welcome.changeSource('fight');
       welcome.stop();
 
       textCountdown.setText([
@@ -89,9 +95,8 @@ export default class StartScene extends Phaser.Scene {
       ]);
 
       fight = this.add.video(0, 0, 'fight').setOrigin(0, 0);
-      var loop = fight.getLoop();
-      fight.setLoop(loop);
-      fight.play(true);
+      fight.setLoop(true);
+      fight.play();
      
       welcomeEnded = true;
     });
@@ -109,7 +114,7 @@ export default class StartScene extends Phaser.Scene {
     // test text
     textUser = this.add.text(1690, 660, '', { font: '72px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
     textCoderona = this.add.text(230, 660, '', { font: '64px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
-    textCountdown = this.add.text(960, 330, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
+    textCountdown = this.add.text(960, 340, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
    
     //action of setup team to boot up the game and play the starting video
     bootButton.on('down', () => {
@@ -166,7 +171,7 @@ export default class StartScene extends Phaser.Scene {
     })
 
     if (this.game.config.gameRestart == true) {
-      
+      console.log('autoplaying the video on restart game');
       welcome.setCurrentTime(0);
       welcome.play();
       // welcome.setVisibility(true);

@@ -17,8 +17,9 @@ export default class UserWinsScene extends Phaser.Scene {
   }
 
   preload() {
-    //user wins video
-    this.load.video('userwins', 'assets/userwins.mp4', 'loadeddata', false, false);
+    // this.load.video('userwins', 'assets/userwins.mp4', 'loadeddata', false, false);
+    // this.load.video('userwins', 'assets/userwins_nogrid.mp4', 'loadeddata', false, false);
+    this.load.video('userwins', 'assets/userwins_nogrid_hd.mp4', 'loadeddata', false, false);
   }
 
   create() {
@@ -33,16 +34,20 @@ export default class UserWinsScene extends Phaser.Scene {
         `Reboot BK6?`
       ]); 
 
-      await this.game.config.arduinoWriter.write('bootup');
+      await this.game.config.serPort.write('bootup', (err) => {
+        if (err) {
+          return console.log('Error on write: ', err.message);
+        }
+        console.log('message written');
+      });
     });
 
-    // this.cursors = this.input.keyboard.createCursorKeys()
     this.input.mouse.disableContextMenu();
 
     bootButton = this.input.keyboard.addKey('P');
 
     // test text
-    textReboot = this.add.text(960, 330, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
+    textReboot = this.add.text(960, 340, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5);
 
     //action of setup team to boot up the game and play the starting video
     bootButton.on('down', () => {

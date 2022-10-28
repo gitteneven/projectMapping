@@ -1,25 +1,18 @@
-//todo
-
-//implement serial communication to communicate to the arduino when the powerup button can be used as bootup button for the game
-//start serial comm
-//remove button from screen when successful
-// send signal when connected that powerup button can be used (pass through 'bootup' to arduino)
-//turn on powerup button in the arduino IDE when incoming message == 'bootup'
-
-//activate powerup bootup for the startscene OK
-//activate powerup bootup for the game-over scene, if this case then no need to press this again within the startscene as well.
-
-//fix restarting game screen
-
 import 'phaser';
 import GameScene from './GameScene';
 import StartScene from './StartScene';
 import UserWinsScene from './UserWinsScene';
 import CoderonaWinsScene from './CoderonaWinsScene';
 
+const { SerialPort } = require('serialport')
+const { ReadlineParser } = require('@serialport/parser-readline')
+
 const serialConnect = document.querySelector('.connect__serialButton');
 const connectWindow = document.querySelector('.connect');
+
 let writer;
+let serPort;
+let arduinoPortPath;
 
 const config = {
   type: Phaser.AUTO,
@@ -37,53 +30,64 @@ const config = {
   scene: [StartScene, GameScene, UserWinsScene, CoderonaWinsScene],
   arduinoWriter: null,
   gameRestart: false,
-  // scene: CoderonaWinsScene
+  serPort: null
 };
 
-const handleClickConnect = async () => {
-  // Prompt user to select any serial port.
-  const port = await navigator.serial.requestPort();
+const writeonSer = (data) => {
+  //Write the data to serial port.
+  console.log('going to write ', data);
 
-  //wait for port to open.
-  await port.open({ baudRate: 9600 });
-
-  console.log('port open');
-
-  //start reading for incoming data from the serial device as 
-  const textDecoder = new TextDecoderStream();
-  const readableStreamClosed = port.readable.pipeTo(textDecoder.writable);
-  const reader = textDecoder.readable.getReader();
-
-  const textEncoder = new TextEncoderStream();
-  const writableStreamClosed = textEncoder.readable.pipeTo(port.writable);
-
-  writer = textEncoder.writable.getWriter();
-
-  //write bootup on start of connection
-  // await writer.write("bootup");
-
-  //start the game
-  let game = new Phaser.Game(config);
-  game.config.arduinoWriter = writer;
-  game.config.gameRestart = false;
-  connectWindow.classList.add('hidden');
-
-  // Listen to data coming from the serial device.
-  while (true) {
-    const { value, done } = await reader.read();
-    if (done) {
-      // Allow the serial port to be closed later.
-      reader.releaseLock();
-      break;
+  serPort.write(data, (err) => {
+    if (err) {
+      return console.log('Error on write: ', err.message);
     }
-    // value is a Uint8Array.
-    console.log(value);
-  }
+    console.log('message written');
+  });
+
 }
 
-const init = () => {
-  console.log('Hello from main.ts');
-  
+const handleClickConnect = async () => {
+  console.log('opening new serial port');
+
+  await SerialPort.list().then((ports, err) => {
+    if (err) {
+      console.log(err.message);
+      return;
+    }
+    console.log('ports', ports);
+
+    if (ports.length === 0) {
+      console.log('No ports discovered');
+    } else {
+      //loop through ports to find the arduino llc connection
+      ports.forEach((port) => {
+        if (port.manufacturer === 'Arduino LLC') {
+          console.log('arduino found');
+          arduinoPortPath = port.path;
+        } 
+      });
+    }
+  })
+
+  //connecting to the serial port for the arduino
+  serPort = await new SerialPort({ path: arduinoPortPath, baudRate: 9600 });
+
+  //parse incoming data line-by-line from serial port.
+  const parser = serPort.pipe(new ReadlineParser({ delimiter: '\r\n' }))
+  parser.on('data', (event) => { console.log(event) });
+
+  //add listener to close port before page refresh
+  window.onbeforeunload = () => {
+    serPort.close();
+  };
+
+  let game = new Phaser.Game(config);
+  game.config.serPort = serPort;
+  game.config.gameRestart = false;
+  connectWindow.classList.add('hidden');
+}
+
+const init = () => {  
   if ("serial" in navigator) {
     // The Web Serial API is supported.
     console.log('serial supported');
