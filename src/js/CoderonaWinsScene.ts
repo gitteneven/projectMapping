@@ -20,7 +20,8 @@ export default class CoderonaWinsScene extends Phaser.Scene {
     //user wins video
     // this.load.video('coderonawins', 'assets/corrupted.mp4', 'loadeddata', false, false);
     // this.load.video('coderonawins', 'assets/viruswins_nogrid.mp4', 'loadeddata', false, false);
-    this.load.video('coderonawins', 'assets/viruswins_nogrid_hd.mp4', 'loadeddata', false, false);
+    // this.load.video('coderonawins', 'assets/viruswins_nogrid_hd.mp4', 'loadeddata', false, false);
+    this.load.video('coderonawins', 'assets/corrupted_final.mp4', 'loadeddata', false, false);
   }
 
   create() {
