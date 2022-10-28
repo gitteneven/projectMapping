@@ -60,7 +60,8 @@ export default class GameScene extends Phaser.Scene {
         //background image
         // this.load.video('background', 'assets/game_lowbar.mp4', 'loadeddata', false, true);
         // this.load.video('background', 'assets/game_nogrid.mp4', 'loadeddata', false, true);
-        this.load.video('background', 'assets/game_nogrid_hd.mp4', 'loadeddata', false, true);
+        // this.load.video('background', 'assets/game_nogrid_hd.mp4', 'loadeddata', false, true);
+        this.load.video('background', 'assets/game_final.mp4', 'loadeddata', false, true);
 
         //cursor image
         this.load.image('cursor', 'assets/cursor.png');

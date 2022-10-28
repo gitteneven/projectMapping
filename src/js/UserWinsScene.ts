@@ -19,7 +19,8 @@ export default class UserWinsScene extends Phaser.Scene {
   preload() {
     // this.load.video('userwins', 'assets/userwins.mp4', 'loadeddata', false, false);
     // this.load.video('userwins', 'assets/userwins_nogrid.mp4', 'loadeddata', false, false);
-    this.load.video('userwins', 'assets/userwins_nogrid_hd.mp4', 'loadeddata', false, false);
+    // this.load.video('userwins', 'assets/userwins_nogrid_hd.mp4', 'loadeddata', false, false);
+    this.load.video('userwins', 'assets/userwins_final.mp4', 'loadeddata', false, false);
   }
 
   create() {

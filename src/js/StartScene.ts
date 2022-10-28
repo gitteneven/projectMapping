@@ -30,8 +30,10 @@ export default class StartScene extends Phaser.Scene {
 
   preload() {
     //welcome video
-    this.load.video('welcome', 'assets/welcome2.mp4', 'loadeddata', false, true);
-    this.load.video('fight', 'assets/fightloop.mp4', 'loadeddata', false, true);
+    // this.load.video('welcome', 'assets/welcome2.mp4', 'loadeddata', false, true);
+    // this.load.video('fight', 'assets/fightloop.mp4', 'loadeddata', false, true);
+    this.load.video('welcome', 'assets/welcome_final.mp4', 'loadeddata', false, true);
+    this.load.video('fight', 'assets/fight_final.mp4', 'loadeddata', false, true);
     
     this.load.audio('good-sound', 'assets/audio/loopGood.mp3')
     this.load.audio('normal-sound', 'assets/audio/loopNormal.mp3')
@@ -112,8 +114,8 @@ export default class StartScene extends Phaser.Scene {
    
 
     // test text
-    textUser = this.add.text(1690, 660, '', { font: '72px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
-    textCoderona = this.add.text(230, 660, '', { font: '64px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
+    textUser = this.add.text(1690, 830, '', { font: '72px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
+    textCoderona = this.add.text(230, 830, '', { font: '64px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
     textCountdown = this.add.text(960, 340, '', { font: '80px lores-9-plus-wide', color: '#ffffff' }).setOrigin(0.5, 0.5).setDepth(1);
    
     //action of setup team to boot up the game and play the starting video
