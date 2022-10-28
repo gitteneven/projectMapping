@@ -33,7 +33,7 @@ export default class StartScene extends Phaser.Scene {
     // this.load.video('welcome', 'assets/welcome2.mp4', 'loadeddata', false, true);
     // this.load.video('fight', 'assets/fightloop.mp4', 'loadeddata', false, true);
     this.load.video('welcome', 'assets/welcome_final.mp4', 'loadeddata', false, true);
-    this.load.video('fight', 'assets/fight_final.mp4', 'loadeddata', false, true);
+    this.load.video('fight', 'assets/_main_4.mp4', 'loadeddata', false, true);
     
     this.load.audio('good-sound', 'assets/audio/loopGood.mp3')
     this.load.audio('normal-sound', 'assets/audio/loopNormal.mp3')
